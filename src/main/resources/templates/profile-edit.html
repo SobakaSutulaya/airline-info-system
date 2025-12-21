@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title} ?: 'Редактирование профиля'">Редактирование профиля</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        header {
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        nav.container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4c51bf;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span { margin-top: 2px; }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover { color: #667eea; }
+
+        .btn-small {
+            padding: 8px 18px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: #fff !important;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-small:hover { 
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        main { padding: 40px 0 60px; }
+
+        .card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.28);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 28px;
+            color: #2d3748;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e0;
+            font-size: 14px;
+            background: #ffffff !important;
+            color: #1a202c !important;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input:hover {
+            border-color: #a0aec0;
+        }
+
+        input::placeholder {
+            color: #9ca3af !important;
+        }
+
+        input[readonly] {
+            background: #f7fafc !important;
+            color: #718096 !important;
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-secondary {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e0;
+            background: #fff;
+            color: #4a5568;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            nav.container {
+                flex-direction: column;
+                justify-content: center;
+                gap: 12px;
+                height: auto;
+                padding: 12px 24px;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .card { margin: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container navbar">
+        <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+        <ul class="nav-links">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/schedule">Расписание</a></li>
+            <li><a href="/about">О нас</a></li>
+            <li><a href="/radar">Радар</a></li>
+            <li><a href="/aircraft">Самолеты</a></li>
+            <li><a href="/tickets">Бронирование</a></li>
+
+            <li sec:authorize="!isAuthenticated()">
+                <a class="btn btn-primary" href="/login">Войти</a>
+            </li>
+            <li sec:authorize="!isAuthenticated()">
+                <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+            </li>
+
+            <li sec:authorize="isAuthenticated()">
+                <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a class="btn btn-outline" href="/logout">Выход</a>
+            </li>
+        </ul>
+    </div>
+</header>
+
+
+<main>
+    <div class="card">
+        <h1>Редактирование профиля</h1>
+
+        <form th:action="@{/profile/edit}"
+              th:object="${user}"
+              method="post">
+
+            <!-- id на случай, если нужно -->
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="form-group">
+                <label for="username">Имя пользователя</label>
+                <input id="username"
+                       type="text"
+                       th:value="*{username}"
+                       readonly/>
+            </div>
+
+            <div class="form-group">
+                <label for="fullName">ФИО</label>
+                <input id="fullName"
+                       type="text"
+                       th:field="*{fullName}"/>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Электронная почта</label>
+                <input id="email"
+                       type="email"
+                       th:field="*{email}"/>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Телефон</label>
+                <input id="phone"
+                       type="tel"
+                       th:field="*{phone}"/>
+            </div>
+
+            <div class="form-actions">
+                <a th:href="@{/profile}" class="btn-secondary">Отмена</a>
+                <button type="submit" class="btn-small">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Контактная информация</h3>
+                <p>📞 Телефон: +7 (495) 123-45-67</p>
+                <p>✉️ Email: info@lastochka-airlines.ru</p>
+                <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+                <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+            </div>
+            <div class="footer-section">
+                <h3>Основные разделы</h3>
+                <a href="/">Главная</a>
+                <a href="/schedule">Расписание рейсов</a>
+                <a href="/about">О нас</a>
+                <a href="/radar">Радар полетов</a>
+                <a href="/aircraft">Наш флот</a>
+                <a href="/tickets">Бронирование</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

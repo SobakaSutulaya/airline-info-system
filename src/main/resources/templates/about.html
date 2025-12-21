@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Airline Info System'">О нас - Airline Info System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f0e17;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        main {
+            padding: 2rem 0 4rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #a78bfa;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Профиль автора */
+        .author-card {
+            background: #252030;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .author-info {
+            flex: 1;
+        }
+
+        .author-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .author-group {
+            font-size: 1.1rem;
+            color: #cbd5e0;
+            margin-bottom: 1.5rem;
+        }
+
+        .author-contacts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-label {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .contact-value {
+            font-size: 1rem;
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        /* Этапы работы */
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .timeline-card {
+            background: #252030;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-left: 4px solid #8b5cf6;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+            border-left-color: #a78bfa;
+        }
+
+        .timeline-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #a78bfa;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-date {
+            font-size: 1rem;
+            color: #cbd5e0;
+        }
+
+        .timeline-card:nth-child(1) {
+            border-left-color: #8b5cf6;
+        }
+
+        .timeline-card:nth-child(2) {
+            border-left-color: #8b5cf6;
+        }
+
+        .timeline-card:nth-child(3) {
+            border-left-color: #f59e0b;
+        }
+
+        .timeline-card:nth-child(4) {
+            border-left-color: #10b981;
+        }
+
+        /* Технологии */
+        .tech-description {
+            font-size: 1.1rem;
+            color: #cbd5e0;
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .tech-card {
+            background: #252030;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+            border-color: rgba(139, 92, 246, 0.6);
+        }
+
+        .tech-card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #a78bfa;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-list {
+            list-style: none;
+        }
+
+        .tech-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            color: #cbd5e0;
+            font-size: 1rem;
+        }
+
+        .tech-item:last-child {
+            border-bottom: none;
+        }
+
+        .tech-item strong {
+            color: #8b5cf6;
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: #252030;
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card:nth-child(1) .stat-number {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card:nth-child(2) .stat-number {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card:nth-child(3) .stat-number {
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #cbd5e0;
+            font-weight: 600;
+        }
+
+        /* Редактирование */
+        .edit-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .author-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .author-contacts {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline,
+            .tech-grid,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container navbar">
+        <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+        <ul class="nav-links">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/schedule">Расписание</a></li>
+            <li><a href="/about">О нас</a></li>
+            <li><a href="/radar">Радар</a></li>
+            <li><a href="/aircraft">Самолеты</a></li>
+            <li><a href="/tickets">Бронирование</a></li>
+
+            <li sec:authorize="!isAuthenticated()">
+                <a class="btn btn-primary" href="/login">Войти</a>
+            </li>
+            <li sec:authorize="!isAuthenticated()">
+                <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+            </li>
+
+            <li sec:authorize="isAuthenticated()">
+                <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a class="btn btn-outline" href="/logout">Выход</a>
+            </li>
+        </ul>
+    </div>
+</header>
+
+<main class="container">
+    <!-- Редактирование для админов и менеджеров -->
+    <div class="edit-section" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+        <h1 class="section-title">О нас</h1>
+        <a th:href="@{/manage/about/edit}" class="btn-small" style="padding: 0.5rem 1.5rem; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border-radius: 999px; text-decoration: none; font-weight: 600;">
+            ✏ Редактировать
+        </a>
+    </div>
+    <h1 class="section-title" sec:authorize="!hasAnyRole('ADMIN','MANAGER')">О нас</h1>
+
+    <!-- Текст из БД (если есть) - в начале страницы -->
+    <div class="section" th:if="${aboutText}">
+        <div style="background: #252030; border-radius: 20px; padding: 2.5rem; border: 1px solid rgba(139, 92, 246, 0.3); max-width: 1000px; margin: 0 auto;">
+            <p style="font-size: 1.1rem; line-height: 1.8; color: #cbd5e0; text-align: center;" th:text="${aboutText}"></p>
+        </div>
+    </div>
+
+    <!-- Об авторе -->
+    <div class="section">
+        <h2 class="section-title">Об авторе</h2>
+        <p style="font-size: 1.1rem; color: #cbd5e0; margin-bottom: 2rem; max-width: 900px; margin-left: auto; margin-right: auto; text-align: center;">
+            Информация об авторе курсовой работы и технологиях, использованных в проекте
+        </p>
+
+        <div class="author-card">
+            <div class="author-avatar">
+                <img th:src="@{/images/university-logo.png}" alt="Финансовый университет" onerror="this.style.display='none'; this.parentElement.innerHTML='👤';">
+            </div>
+            <div class="author-info">
+                <div class="author-name">Грузинова Евгения Дмитриевна</div>
+                <div class="author-group">Группа ПИ23-2 • Финансовый университет при Правительстве РФ</div>
+                <div class="author-contacts">
+                    <div class="contact-item">
+                        <div class="contact-label">EMAIL</div>
+                        <div class="contact-value">233528@edu.fa.ru</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">ТЕЛЕФОН</div>
+                        <div class="contact-value">+7 (985) 691-93-08</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Этапы работы над проектом -->
+    <div class="section">
+        <h2 class="section-title">Этапы работы над проектом</h2>
+        <div class="timeline">
+            <div class="timeline-card">
+                <div class="timeline-icon">📅</div>
+                <div class="timeline-title">Начало проекта</div>
+                <div class="timeline-date">21 Октября 2025</div>
+            </div>
+            <div class="timeline-card">
+                <div class="timeline-icon">🔧</div>
+                <div class="timeline-title">Разработка</div>
+                <div class="timeline-date">22 октября - 11 ноября 2025</div>
+            </div>
+            <div class="timeline-card">
+                <div class="timeline-icon">📈</div>
+                <div class="timeline-title">Тестирование</div>
+                <div class="timeline-date">Ноябрь 2025</div>
+            </div>
+            <div class="timeline-card">
+                <div class="timeline-icon">✅</div>
+                <div class="timeline-title">Завершение</div>
+                <div class="timeline-date">Декабрь 2025</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Опыт работы с технологиями -->
+    <div class="section">
+        <h2 class="section-title">Опыт работы с технологиями</h2>
+        <p class="tech-description">
+            В процессе создания проекта были использованы современные технологии веб-разработки и Java-экосистемы. 
+            Приобретён опыт в построении многоуровневой архитектуры, работе с базами данных, реализации безопасности 
+            и создании адаптивных пользовательских интерфейсов.
+        </p>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-card-title">Backend</div>
+                <ul class="tech-list">
+                    <li class="tech-item"><strong>Java</strong> — язык разработки</li>
+                    <li class="tech-item"><strong>Spring Boot</strong> — фреймворк</li>
+                    <li class="tech-item"><strong>Spring Security</strong> — безопасность</li>
+                    <li class="tech-item"><strong>Hibernate JPA</strong> — ORM</li>
+                </ul>
+            </div>
+            <div class="tech-card">
+                <div class="tech-card-title">Frontend</div>
+                <ul class="tech-list">
+                    <li class="tech-item"><strong>HTML</strong> — семантическая разметка</li>
+                    <li class="tech-item"><strong>CSS</strong> — адаптивный дизайн</li>
+                    <li class="tech-item"><strong>JavaScript</strong> — интерактивность</li>
+                    <li class="tech-item"><strong>Thymeleaf</strong> — шаблонизатор</li>
+                </ul>
+            </div>
+            <div class="tech-card">
+                <div class="tech-card-title">Инструменты</div>
+                <ul class="tech-list">
+                    <li class="tech-item"><strong>MySQL</strong> — база данных</li>
+                    <li class="tech-item"><strong>Maven</strong> — управление зависимостями</li>
+                    <li class="tech-item"><strong>Git</strong> — контроль версий</li>
+                    <li class="tech-item"><strong>REST API</strong> — архитектура</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика проекта -->
+    <div class="section">
+        <h2 class="section-title">Статистика проекта</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">2000+</div>
+                <div class="stat-label">строк кода Java</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">сущностей в БД</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">ролей пользователей</div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Контактная информация</h3>
+                <p>📞 Телефон: +7 (495) 123-45-67</p>
+                <p>✉️ Email: info@lastochka-airlines.ru</p>
+                <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+                <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+            </div>
+            <div class="footer-section">
+                <h3>Основные разделы</h3>
+                <a href="/">Главная</a>
+                <a href="/schedule">Расписание рейсов</a>
+                <a href="/about">О нас</a>
+                <a href="/radar">Радар полетов</a>
+                <a href="/aircraft">Наш флот</a>
+                <a href="/tickets">Бронирование</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

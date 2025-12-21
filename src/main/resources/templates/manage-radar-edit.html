@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${title}">Edit Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',-apple-system,"Segoe UI",sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh}
+    header{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);padding:1rem 0;position:sticky;top:0;z-index:100}
+    .container{max-width:1200px;margin:0 auto;padding:0 20px}
+    nav{display:flex;justify-content:space-between;align-items:center}
+    .logo{font-size:1.3rem;font-weight:800;color:#4c51bf}
+    .nav-links{display:flex;gap:18px;list-style:none;align-items:center}
+    .nav-links a{text-decoration:none;color:#334155;font-weight:600}
+    .btn-small{padding:.45rem 1rem;background:#667eea;color:#fff!important;border-radius:999px;text-decoration:none}
+    main{padding:2rem 0}
+    .card{background:#fff;border-radius:18px;padding:28px;box-shadow:0 12px 30px rgba(15,23,42,.25);margin-top:20px}
+    h1{color:#4c51bf;margin-bottom:12px}
+    label{display:block;margin-top:14px;margin-bottom:6px;font-weight:700;color:#334155}
+    input,textarea{width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:12px;font-size:1rem;outline:none}
+    textarea{min-height:220px;resize:vertical}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+    .btn{border:none;cursor:pointer;padding:.6rem 1.1rem;border-radius:12px;background:#667eea;color:#fff;font-weight:800}
+    .btn-secondary{background:#eef2ff;color:#334155;text-decoration:none}
+    .hint{margin-top:6px;color:#64748b}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container navbar">
+    <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+    <ul class="nav-links">
+      <li><a href="/">Главная</a></li>
+      <li><a href="/schedule">Расписание</a></li>
+      <li><a href="/about">О нас</a></li>
+      <li><a href="/radar">Радар</a></li>
+      <li><a href="/aircraft">Самолеты</a></li>
+      <li><a href="/tickets">Бронирование</a></li>
+
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/login">Войти</a>
+      </li>
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+      </li>
+
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-outline" href="/logout">Выход</a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+<main class="container">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1>Редактирование страницы «Радар»</h1>
+      <a class="btn-small" href="/radar">← Назад</a>
+    </div>
+    <p class="hint">Сохраняется в таблицу <b>page_content</b> по ключу <b>RADAR</b>.</p>
+
+    <form th:action="@{/manage/radar/save}" th:object="${content}" method="post">
+      <input type="hidden" th:field="*{pageKey}"/>
+
+      <label>Заголовок</label>
+      <input type="text" th:field="*{title}" required>
+
+      <label>Короткое описание (content)</label>
+      <input type="text" th:field="*{content}" placeholder="Например: Онлайн-радар рейсов">
+
+      <label>Основной текст (body)</label>
+      <textarea th:field="*{body}" required></textarea>
+
+      <div class="actions">
+        <a class="btn btn-secondary" href="/radar">Отмена</a>
+        <button class="btn" type="submit">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Контактная информация</h3>
+        <p>📞 Телефон: +7 (495) 123-45-67</p>
+        <p>✉️ Email: info@lastochka-airlines.ru</p>
+        <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+        <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+      </div>
+      <div class="footer-section">
+        <h3>Основные разделы</h3>
+        <a href="/">Главная</a>
+        <a href="/schedule">Расписание рейсов</a>
+        <a href="/about">О нас</a>
+        <a href="/radar">Радар полетов</a>
+        <a href="/aircraft">Наш флот</a>
+        <a href="/tickets">Бронирование</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

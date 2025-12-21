@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${title} + ' - Airline Info System'">Aircraft Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    main {
+      padding: 2rem 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .content {
+      background: #fff;
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.28);
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: #ffffff !important;
+      color: #1a202c !important;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: #ffffff !important;
+      color: #1a202c !important;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    input[type="text"]:hover,
+    textarea:hover {
+      background: #ffffff !important;
+    }
+    
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: #9ca3af !important;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    #dropArea {
+      border: 3px dashed #cbd5e0;
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f7fafc;
+    }
+
+    #dropArea:hover {
+      border-color: #667eea;
+      background: #edf2f7;
+    }
+
+    #dropArea.dragover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    #dropText {
+      color: #718096;
+      font-size: 1rem;
+      display: block;
+    }
+
+    #dropArea.has-file #dropText {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .current-image {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #edf2f7;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #4a5568;
+    }
+
+    .current-image img {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .btn {
+      padding: 0.75rem 2rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e0;
+    }
+
+    .info-box {
+      background: #edf2f7;
+      border-left: 4px solid #667eea;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+      color: #4a5568;
+    }
+
+    .info-box strong {
+      color: #2d3748;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container navbar">
+    <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+    <ul class="nav-links">
+      <li><a href="/">Главная</a></li>
+      <li><a href="/schedule">Расписание</a></li>
+      <li><a href="/about">О нас</a></li>
+      <li><a href="/radar">Радар</a></li>
+      <li><a href="/aircraft">Самолеты</a></li>
+      <li><a href="/tickets">Бронирование</a></li>
+
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/login">Войти</a>
+      </li>
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+      </li>
+
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-outline" href="/logout">Выход</a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<main class="container">
+  <div class="content">
+    <h1 th:text="${title}">Редактирование самолёта</h1>
+
+    <div class="info-box" sec:authorize="hasRole('ADMIN')">
+      <strong>🔒 Только для администраторов:</strong> Здесь вы можете добавить или отредактировать информацию о самолёте, включая фотографию и описание.
+    </div>
+
+    <form th:object="${aircraft}"
+          th:action="${aircraft.id} == null ? @{/admin/aircraft/add} : @{'/admin/aircraft/edit/' + ${aircraft.id}}"
+          method="post"
+          enctype="multipart/form-data">
+
+      <input type="hidden" th:if="${_csrf != null}"
+             th:name="${_csrf.parameterName}"
+             th:value="${_csrf.token}"/>
+
+      <!-- Название -->
+      <div class="form-group">
+        <label for="name">Название самолёта *</label>
+        <input id="name" 
+               th:field="*{name}" 
+               type="text" 
+               placeholder="Например: Boeing 737-800"
+               required>
+      </div>
+
+      <!-- Загрузка фото -->
+      <div class="form-group">
+        <label>Фотография самолёта</label>
+        
+        <div id="dropArea">
+          <span id="dropText">📷 Перетащите файл сюда или нажмите, чтобы выбрать</span>
+        </div>
+
+        <input id="imageFile" 
+               name="imageFile" 
+               type="file" 
+               accept="image/*" 
+               style="display:none">
+
+        <div class="current-image" th:if="${aircraft.imageUrl != null and aircraft.imageUrl != ''}">
+          <strong>Текущее изображение:</strong>
+          <img th:src="${aircraft.imageUrl}" 
+               th:alt="${aircraft.name}"
+               onerror="this.style.display='none'">
+          <div style="margin-top: 0.5rem; color: #718096; font-size: 0.85rem;" th:text="${aircraft.imageUrl}"></div>
+        </div>
+      </div>
+
+      <!-- Краткое описание -->
+      <div class="form-group">
+        <label for="shortInfo">Краткое описание</label>
+        <input id="shortInfo" 
+               th:field="*{shortInfo}" 
+               type="text"
+               placeholder="Например: Среднемагистральный пассажирский самолёт">
+      </div>
+
+      <!-- Подробное описание -->
+      <div class="form-group">
+        <label for="details">Подробное описание</label>
+        <textarea id="details" 
+                  th:field="*{details}"
+                  placeholder="Введите подробное описание самолёта: технические характеристики, вместимость, дальность полёта и т.д."></textarea>
+      </div>
+
+      <!-- Кнопки -->
+      <div class="buttons">
+        <a href="/aircraft" class="btn btn-secondary">Отмена</a>
+        <button type="submit" class="btn btn-primary"
+                th:text="${aircraft.id} == null ? '➕ Добавить самолёт' : '💾 Сохранить изменения'">
+          Сохранить
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script>
+  const dropArea = document.getElementById('dropArea');
+  const dropText = document.getElementById('dropText');
+  const fileInput = document.getElementById('imageFile');
+
+  if (dropArea && fileInput) {
+    const preventDefaults = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => {
+        dropArea.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => {
+        dropArea.classList.remove('dragover');
+      }, false);
+    });
+
+    dropArea.addEventListener('click', () => fileInput.click());
+
+    dropArea.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length > 0) {
+        fileInput.files = files;
+        updateDropText(files[0].name);
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files && fileInput.files.length > 0) {
+        updateDropText(fileInput.files[0].name);
+      }
+    });
+
+    function updateDropText(fileName) {
+      dropText.textContent = '✅ ' + fileName;
+      dropArea.classList.add('has-file');
+    }
+  }
+</script>
+
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Контактная информация</h3>
+        <p>📞 Телефон: +7 (495) 123-45-67</p>
+        <p>✉️ Email: info@lastochka-airlines.ru</p>
+        <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+        <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+      </div>
+      <div class="footer-section">
+        <h3>Основные разделы</h3>
+        <a href="/">Главная</a>
+        <a href="/schedule">Расписание рейсов</a>
+        <a href="/about">О нас</a>
+        <a href="/radar">Радар полетов</a>
+        <a href="/aircraft">Наш флот</a>
+        <a href="/tickets">Бронирование</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

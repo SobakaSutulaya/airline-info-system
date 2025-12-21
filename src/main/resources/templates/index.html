@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Airline Info System'">Airline Info System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #e2e8f0;
+            background: #0f0e17;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: color 0.3s;
+            padding: 0.25rem 0.4rem;
+        }
+
+        .nav-links a:hover { color: #667eea; }
+
+        .btn-small {
+            padding: 0.4rem 1rem;
+            background: #667eea;
+            color: white !important;
+            border-radius: 999px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn-small:hover { background: #5568d3; }
+
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .content {
+            background: #252030;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            margin-top: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        h1 {
+            color: #a78bfa;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background: rgba(15, 14, 23, 0.95);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+            color: #718096;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover { background: #5568d3; }
+
+        .btn-secondary { 
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            border-radius: 999px;
+            box-shadow: 0 4px 15px rgba(167, 139, 250, 0.4);
+        }
+
+        .btn-secondary:hover { 
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(167, 139, 250, 0.5);
+        }
+
+        .video-section {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            background: #0f0e17;
+        }
+
+        .video-container {
+            width: 100%;
+            height: auto;
+            position: relative;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .video-container video {
+                height: 300px;
+                object-fit: cover;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <div class="container navbar">
+        <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+        <ul class="nav-links">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/schedule">Расписание</a></li>
+            <li><a href="/about">О нас</a></li>
+            <li><a href="/radar">Радар</a></li>
+            <li><a href="/aircraft">Самолеты</a></li>
+            <li><a href="/tickets">Бронирование</a></li>
+
+            <li sec:authorize="!isAuthenticated()">
+                <a class="btn btn-primary" href="/login">Войти</a>
+            </li>
+            <li sec:authorize="!isAuthenticated()">
+                <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+            </li>
+
+            <li sec:authorize="isAuthenticated()">
+                <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a class="btn btn-outline" href="/logout">Выход</a>
+            </li>
+        </ul>
+    </div>
+</header>
+
+<!-- Видео секция на всю ширину экрана -->
+<div class="video-section">
+    <div class="video-container">
+        <video autoplay muted loop playsinline>
+            <source th:src="@{/videos/video.mp4}" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+    </div>
+</div>
+
+<main class="container">
+    <div class="content">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+            <h1 th:text="${title}">Airline Information System</h1>
+
+            <a sec:authorize="hasAnyRole('ADMIN','MANAGER')"
+               th:href="@{/manage/home/edit}"
+               class="btn-small">
+                ✏ Редактировать
+            </a>
+        </div>
+
+        <!-- ВАЖНО: текст берём из БД -->
+        <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #cbd5e0;" th:text="${homeText}">
+            Добро пожаловать!
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+            <div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.2); border: 1px solid rgba(167, 139, 250, 0.4); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;" 
+                 onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 15px 40px rgba(139, 92, 246, 0.5), 0 0 30px rgba(139, 92, 246, 0.3)'"
+                 onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(139, 92, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.2)'">
+                <h2 style="color: white; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700;">📊 Панель управления</h2>
+                <p style="color: rgba(255, 255, 255, 0.95); line-height: 1.6;">Просмотреть полную статистику и аналитику авиакомпаний.</p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); color: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(167, 139, 250, 0.4), 0 0 20px rgba(167, 139, 250, 0.2); border: 1px solid rgba(196, 181, 253, 0.4); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;"
+                 onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 15px 40px rgba(167, 139, 250, 0.5), 0 0 30px rgba(167, 139, 250, 0.3)'"
+                 onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(167, 139, 250, 0.4), 0 0 20px rgba(167, 139, 250, 0.2)'">
+                <h2 style="color: white; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700;">✈️ Рейсы</h2>
+                <p style="color: rgba(255, 255, 255, 0.95); line-height: 1.6;">Управление и отслеживание информации о рейсах и расписаниях.</p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4), 0 0 20px rgba(124, 58, 237, 0.2); border: 1px solid rgba(167, 139, 250, 0.4); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;"
+                 onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 15px 40px rgba(124, 58, 237, 0.5), 0 0 30px rgba(124, 58, 237, 0.3)'"
+                 onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 10px 30px rgba(124, 58, 237, 0.4), 0 0 20px rgba(124, 58, 237, 0.2)'">
+                <h2 style="color: white; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 700;">👥 Пассажирам</h2>
+                <p style="color: rgba(255, 255, 255, 0.95); line-height: 1.6;">Доступ к записям о пассажирах и информации о бронировании.</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(139, 92, 246, 0.1); border-radius: 20px; border: 1px solid rgba(139, 92, 246, 0.3); box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #a78bfa, #8b5cf6, transparent);"></div>
+            <h2 style="color: #a78bfa; margin-bottom: 1rem; font-weight: 700;">Быстрые действия</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+
+                <a th:href="@{/schedule}" class="btn">Посмотреть рейсы</a>
+
+                <a th:href="@{/register}" class="btn btn-secondary" sec:authorize="!isAuthenticated()">
+                    Создать аккаунт
+                </a>
+
+                <a th:href="@{/about}" class="btn" sec:authorize="isAuthenticated()">
+                    Узнать больше
+                </a>
+
+                <a th:href="@{/about}" class="btn btn-secondary" sec:authorize="!isAuthenticated()">
+                    Узнать больше
+                </a>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Контактная информация</h3>
+                <p>📞 Телефон: +7 (495) 123-45-67</p>
+                <p>✉️ Email: info@lastochka-airlines.ru</p>
+                <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+                <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+            </div>
+            <div class="footer-section">
+                <h3>Основные разделы</h3>
+                <a href="/">Главная</a>
+                <a href="/schedule">Расписание рейсов</a>
+                <a href="/about">О нас</a>
+                <a href="/radar">Радар полетов</a>
+                <a href="/aircraft">Наш флот</a>
+                <a href="/tickets">Бронирование</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

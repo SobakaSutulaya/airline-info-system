@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${title} ?: 'Flight Form'">Flight Form</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<header>
+  <div class="container navbar">
+    <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+    <ul class="nav-links">
+      <li><a href="/">Главная</a></li>
+      <li><a href="/schedule">Расписание</a></li>
+      <li><a href="/about">О нас</a></li>
+      <li><a href="/radar">Радар</a></li>
+      <li><a href="/aircraft">Самолеты</a></li>
+      <li><a href="/tickets">Бронирование</a></li>
+
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/login">Войти</a>
+      </li>
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+      </li>
+
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-outline" href="/logout">Выход</a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+<main>
+  <div class="container">
+    <div class="card">
+      <h1 th:text="${title} ?: 'Flight Form'">Flight Form</h1>
+
+      <form th:action="@{/admin/flights/save}"
+            th:object="${flight}"
+            method="post">
+
+        <!-- ID (hidden, чтобы при редактировании обновлялся тот же объект) -->
+        <input type="hidden" th:field="*{id}"/>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div class="form-group">
+            <label for="flightNumber">Номер рейса</label>
+            <input id="flightNumber" type="text" th:field="*{flightNumber}" placeholder="Например: AA101" required/>
+          </div>
+
+          <div class="form-group">
+            <label for="airline">Авиакомпания</label>
+            <input id="airline" type="text" th:field="*{airline}" placeholder="Например: Aeroflot" required/>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div class="form-group">
+            <label for="origin">Город вылета</label>
+            <input id="origin" type="text" th:field="*{origin}" placeholder="Например: Москва (SVO)" required/>
+          </div>
+
+          <div class="form-group">
+            <label for="destination">Город прилёта</label>
+            <input id="destination" type="text" th:field="*{destination}" placeholder="Например: Санкт-Петербург (LED)" required/>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div class="form-group">
+            <label for="departureTime">Время отправления</label>
+            <input id="departureTime"
+                   type="datetime-local"
+                   th:field="*{departureTime}"
+                   required/>
+          </div>
+
+          <div class="form-group">
+            <label for="arrivalTime">Время прибытия</label>
+            <input id="arrivalTime"
+                   type="datetime-local"
+                   th:field="*{arrivalTime}"
+                   required/>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div class="form-group">
+            <label for="gate">Гейт</label>
+            <input id="gate" type="text" th:field="*{gate}" placeholder="Например: A12"/>
+          </div>
+
+          <div class="form-group">
+            <label for="aircraftType">Тип самолёта</label>
+            <input id="aircraftType" type="text" th:field="*{aircraftType}" placeholder="Например: Boeing 737"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Статус</label>
+          <select id="status" th:field="*{status}">
+            <option value="On Time">По расписанию</option>
+            <option value="Delayed">Задержан</option>
+            <option value="Cancelled">Отменён</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <a th:href="@{/schedule}" class="btn-secondary">Отмена</a>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Контактная информация</h3>
+        <p>📞 Телефон: +7 (495) 123-45-67</p>
+        <p>✉️ Email: info@lastochka-airlines.ru</p>
+        <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+        <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+      </div>
+      <div class="footer-section">
+        <h3>Основные разделы</h3>
+        <a href="/">Главная</a>
+        <a href="/schedule">Расписание рейсов</a>
+        <a href="/about">О нас</a>
+        <a href="/radar">Радар полетов</a>
+        <a href="/aircraft">Наш флот</a>
+        <a href="/tickets">Бронирование</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

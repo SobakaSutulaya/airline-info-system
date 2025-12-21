@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Самолёты</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0e17;
+    }
+
+    .container {
+      max-width: 1920px;
+      margin: 40px auto;
+      padding: 0 32px;
+    }
+
+    .card {
+      background: #252030;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 28px;
+      color: #a78bfa;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .aircraft-card {
+      min-width: 0;
+    }
+
+    @media (max-width: 1400px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .aircraft-card {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(139, 92, 246, 0.2);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      background: #252030;
+      position: relative;
+    }
+    
+    .aircraft-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .aircraft-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(139, 92, 246, 0.5),
+        0 0 40px rgba(139, 92, 246, 0.4);
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+    
+    .aircraft-card:hover::before {
+      opacity: 1;
+    }
+    
+    .aircraft-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .aircraft-card img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+
+    .aircraft-body {
+      padding: 24px;
+      background: #252030;
+    }
+
+    .aircraft-body h3 {
+      margin: 0 0 8px;
+      color: #c4b5fd;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+    }
+    
+    .aircraft-card:hover .aircraft-body h3 {
+      color: #a78bfa;
+    }
+
+    .aircraft-body p {
+      margin: 0;
+      color: #cbd5e0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+
+  </style>
+</head>
+<header>
+  <div class="container navbar">
+    <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+    <ul class="nav-links">
+      <li><a href="/">Главная</a></li>
+      <li><a href="/schedule">Расписание</a></li>
+      <li><a href="/about">О нас</a></li>
+      <li><a href="/radar">Радар</a></li>
+      <li><a href="/aircraft">Самолеты</a></li>
+      <li><a href="/tickets">Бронирование</a></li>
+
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/login">Войти</a>
+      </li>
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+      </li>
+
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-outline" href="/logout">Выход</a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<body>
+<main>
+  <div class="container">
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <h1 style="margin: 0;">Парк самолётов</h1>
+      <a sec:authorize="hasRole('ADMIN')" 
+         th:href="@{/admin/aircraft/add}" 
+         class="btn btn-primary"
+         style="padding: 0.5rem 1.5rem; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+        ➕ Добавить самолёт
+      </a>
+    </div>
+
+    <div class="grid">
+      <div class="aircraft-card" th:each="aircraft : ${aircraftList}">
+        <a th:href="@{'/aircraft/' + ${aircraft.id}}" style="text-decoration: none; color: inherit; display: block;">
+          <img th:src="${aircraft.imageUrl != null ? aircraft.imageUrl : '/images/placeholder-aircraft.jpg'}" 
+               th:alt="${aircraft.name}"
+               onerror="this.src='/images/placeholder-aircraft.jpg'"
+               style="width: 100%; height: 400px; object-fit: cover; background: rgba(139, 92, 246, 0.1); transition: transform 0.4s ease; display: block;">
+        </a>
+
+        <div class="aircraft-body">
+          <h3 th:text="${aircraft.name}">Aircraft name</h3>
+          <p th:text="${aircraft.shortInfo != null ? aircraft.shortInfo : 'Описание отсутствует'}">Short info</p>
+          
+          <div sec:authorize="hasRole('ADMIN')" style="margin-top: 12px; display: flex; gap: 8px;">
+            <a th:href="@{'/admin/aircraft/edit/' + ${aircraft.id}}" 
+               class="btn btn-small"
+               style="padding: 0.4rem 1rem; border-radius: 999px; text-decoration: none; font-size: 0.85rem; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); transition: all 0.3s ease; display: inline-block;">
+              ✏️ Редактировать
+            </a>
+            <form th:action="@{'/admin/aircraft/delete/' + ${aircraft.id}}" 
+                  method="post" 
+                  style="display: inline;"
+                  onsubmit="return confirm('Вы уверены, что хотите удалить этот самолёт?');">
+              <input type="hidden" th:if="${_csrf != null}"
+                     th:name="${_csrf.parameterName}"
+                     th:value="${_csrf.token}"/>
+              <button type="submit" 
+                      class="btn btn-small"
+                      style="padding: 0.4rem 1rem; border-radius: 999px; font-size: 0.85rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); transition: all 0.3s ease;">
+                🗑️ Удалить
+              </button>
+            </form>
+            
+            <style>
+              .aircraft-card .btn-small:hover {
+                transform: translateY(-2px) scale(1.05);
+                box-shadow: 0 6px 18px rgba(139, 92, 246, 0.5) !important;
+              }
+              .aircraft-card button.btn-small:hover {
+                box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5) !important;
+              }
+            </style>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Контактная информация</h3>
+        <p>📞 Телефон: +7 (495) 123-45-67</p>
+        <p>✉️ Email: info@lastochka-airlines.ru</p>
+        <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+        <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+      </div>
+      <div class="footer-section">
+        <h3>Основные разделы</h3>
+        <a href="/">Главная</a>
+        <a href="/schedule">Расписание рейсов</a>
+        <a href="/about">О нас</a>
+        <a href="/radar">Радар полетов</a>
+        <a href="/aircraft">Наш флот</a>
+        <a href="/tickets">Бронирование</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${title} ?: 'Подтверждение бронирования'">Подтверждение бронирования</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    main {
+      padding: 2rem 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.28);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #718096;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .block {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .block-title {
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .block p {
+      margin-bottom: 0.75rem;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    .block b {
+      color: #2d3748;
+      font-weight: 600;
+    }
+
+    .form-section {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      font-size: 1rem;
+      font-family: inherit;
+      background: #ffffff !important;
+      color: #1a202c !important;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group input:hover,
+    .form-group textarea:hover {
+      border-color: #cbd5e0;
+    }
+
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-secondary {
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      border: 2px solid #cbd5e0;
+      background: #fff;
+      color: #4a5568;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .btn-small {
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-small:hover {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container navbar">
+    <a href="/" class="logo"><img th:src="@{/images/logo.png}" alt="Ласточка" />Авиакомпания "Ласточка"</a>
+
+    <ul class="nav-links">
+      <li><a href="/">Главная</a></li>
+      <li><a href="/schedule">Расписание</a></li>
+      <li><a href="/about">О нас</a></li>
+      <li><a href="/radar">Радар</a></li>
+      <li><a href="/aircraft">Самолеты</a></li>
+      <li><a href="/tickets">Бронирование</a></li>
+
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/login">Войти</a>
+      </li>
+      <li sec:authorize="!isAuthenticated()">
+        <a class="btn btn-primary" href="/register">Зарегистрироваться</a>
+      </li>
+
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-primary" href="/profile">👤 <span sec:authentication="name"></span></a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a class="btn btn-outline" href="/logout">Выход</a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+<main>
+  <div class="card">
+    <h1>Подтверждение бронирования</h1>
+    <p class="subtitle">
+      Пожалуйста, проверьте детали рейса и заполните необходимую информацию для подтверждения бронирования.
+    </p>
+
+    <div class="row">
+      <div class="block">
+        <div class="block-title">Рейс</div>
+        <p><b th:text="${flight.flightNumber}">AA101</b> –
+          <span th:text="${flight.airline}">Авиакомпания</span></p>
+        <p>
+          <span th:text="${flight.origin}">Откуда</span>
+          →
+          <span th:text="${flight.destination}">Куда</span>
+        </p>
+        <p>
+          Отправление:
+          <b th:text="${#temporals.format(flight.departureTime, 'dd.MM.yyyy HH:mm')}"></b>
+        </p>
+        <p>
+          Прибытие:
+          <b th:text="${#temporals.format(flight.arrivalTime, 'dd.MM.yyyy HH:mm')}"></b>
+        </p>
+        <p>
+          Выход:
+          <span th:text="${flight.gate} ?: '—'">A12</span>
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Пассажир</div>
+        <p>
+          Имя:
+          <b th:text="${user.fullName} ?: ${user.username}">Имя пользователя</b>
+        </p>
+        <p>
+          Email:
+          <span th:text="${user.email} ?: '—'">user@example.com</span>
+        </p>
+      </div>
+    </div>
+
+    <form th:action="@{/booking/confirm}" method="post">
+      <input type="hidden" name="flightId" th:value="${flight.id}"/>
+
+      <div class="form-section">
+        <div class="form-section-title">Дополнительная информация</div>
+        
+        <div class="form-group">
+          <label for="passportNumber">Номер паспорта *</label>
+          <input id="passportNumber"
+                 name="passportNumber"
+                 type="text"
+                 placeholder="Например: 1234 567890"
+                 required
+                 maxlength="50">
+        </div>
+
+        <div class="form-group">
+          <label for="address">Адрес проживания *</label>
+          <textarea id="address"
+                    name="address"
+                    placeholder="Введите полный адрес проживания"
+                    required
+                    maxlength="255"></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a th:href="@{/tickets}" class="btn-secondary">Отмена</a>
+        <button type="submit" class="btn-small">Подтвердить бронирование</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Контактная информация</h3>
+        <p>📞 Телефон: +7 (495) 123-45-67</p>
+        <p>✉️ Email: info@lastochka-airlines.ru</p>
+        <p>📍 Адрес: г. Москва, ул. Авиационная, д. 1</p>
+        <p>🕐 Режим работы: Пн-Вс, 9:00 - 21:00</p>
+      </div>
+      <div class="footer-section">
+        <h3>Основные разделы</h3>
+        <a href="/">Главная</a>
+        <a href="/schedule">Расписание рейсов</a>
+        <a href="/about">О нас</a>
+        <a href="/radar">Радар полетов</a>
+        <a href="/aircraft">Наш флот</a>
+        <a href="/tickets">Бронирование</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Авиакомпания "Ласточка". Все права защищены.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
